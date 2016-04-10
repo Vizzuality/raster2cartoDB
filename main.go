@@ -28,7 +28,7 @@ var opts struct {
 
 // main is the entry point for the program.
 func main() {
-    log.Info("Start import tiff")
+    
    
     _, err := flags.ParseArgs(&opts, os.Args[1:])
     
@@ -40,7 +40,7 @@ func main() {
         log.SetLevel(log.DebugLevel)
     }
     
-    
+    log.Info("Start import tiff")
     log.Info("First: Create sql file from tiff image")
     _, err = raster2pgsql.ExeRaster(opts.File, opts.TableColumn, opts.TableName, opts.Constraints)
     if err != nil {

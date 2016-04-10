@@ -3,3 +3,4 @@ output/
 *.test
 *.prof
 *.sh
+raster2cartoDB
