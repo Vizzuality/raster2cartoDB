@@ -14,7 +14,7 @@ type Error struct {
 
 func ExecuteSQL(line string, client *cartodb.APIKeyClient) ([]byte, error) {
     log.Debug("Executing CartoDBImporter")
-    response, err := client.Req(client.ResourceURL, "GET", nil, "select * from lukkom")
+    response, err := client.Req(client.ResourceURL, "POST", nil, line)
     if err != nil {
 		log.Error(err)
 		return nil, err
@@ -28,6 +28,5 @@ func ExecuteSQL(line string, client *cartodb.APIKeyClient) ([]byte, error) {
         
         return nil, errors.New(res.Error[0])
     } 
-    
     return body, err
 }

@@ -20,7 +20,7 @@ var opts struct {
     TableColumn string `short:"c" long:"col" description:"Name of column." default:"the_raster_webmercator" ` 
     Constraints bool `short:"C" description:"Add constraints"`
     Proyection int `short:"p" long:"proj" description:"Source proyection" required:"true"`
-    Threads int `long:"threads" description:"Number of threads that execute INSERT commands to CartoDB" default:"2"`
+    Threads int `long:"threads" description:"Number of threads that execute INSERT commands to CartoDB" default:"50"`
     CartoAPI string `long:"api" description:"CartoDB API" required:"true"`
     CartoUser string `long:"user" description:"CartoDB User" required:"true"`
     Verbose bool `short:"v" long:"verbose" description:"Show verbose debug information"`

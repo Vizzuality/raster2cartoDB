@@ -10,10 +10,10 @@ import (
 )
 
 func Run(lines []string, cartoDBApi string, user string, proyection int, numThreads int, tableName string) {
-	log.Info("Import lines with API: ", cartoDBApi, " Num lines:", len(lines))
+	log.Info("Import lines with API: ", cartoDBApi, " Num lines:", len(lines), "; Num Threads: ", numThreads)
 
 	var waitGroup sync.WaitGroup
-    bar := pb.StartNew(len(lines) + 3)
+    bar := pb.StartNew(len(lines) + 2)
     //refresh 50ms
     bar.SetRefreshRate(time.Millisecond * 50)
 
@@ -34,19 +34,24 @@ func Run(lines []string, cartoDBApi string, user string, proyection int, numThre
 			waitGroup.Done()
 		}(i)
 	}
-	for _, line := range lines {
+    client := cartodb.NewAPIKeyClient(cartoDBApi, user, "", "", "")
+    log.Info("Creating table")    
+    ExecuteSQL(lines[1], client)
+    bar.Increment()
+    
+    // remove BEGIN command and create table
+	for _, line := range lines[2:] {
 		tasks <- line
 	}
     close(tasks)
     log.Debug("Waiting to executors")
 	waitGroup.Wait()
-    client := cartodb.NewAPIKeyClient(cartoDBApi, user, "", "", "")
+    
     log.Debug("Updating tables");
     ExecuteSQL(fmt.Sprintf("update %s set the_raster_webmercator =st_transform(st_setSrid(the_raster_webmercator, %d), 3857)", tableName, proyection), client)
+    bar.Increment()
     ExecuteSQL(fmt.Sprintf("GRANT SELECT ON %s TO tileuser;", tableName), client)
+    bar.Increment()
     ExecuteSQL(fmt.Sprintf("GRANT SELECT ON %s TO publicuser;", tableName), client)
-    
-    
-    
-
+    bar.Increment()
 }

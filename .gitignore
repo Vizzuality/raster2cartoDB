@@ -4,3 +4,5 @@ output/
 *.prof
 *.sh
 raster2cartoDB
+out.sql
+test_borneo.tif
