@@ -28,23 +28,24 @@ func ExeRaster(fileName string, tableColumn string, tableName string, constraint
     defer file.Close()
     log.Debug("Creating bash script")
     file.WriteString("#!/bin/sh\n")
-    command := fmt.Sprintf("../raster2pgsql.sh -t 128x128 -c %s -x -Y -f %s %s ",fileName, tableColumn, tableName)
+    command := fmt.Sprintf("raster2pgsql -t 128x128 -c %s -x -Y -f %s %s ",fileName, tableColumn, tableName)
     if constraint == true {
         command += " -C "
     }
-    command += "> out.sql"
+    command += "> out.sql\n"
     file.WriteString(command)
     log.Debug("command: ", command)
     //set working directory to outputPath
-    err = os.Chdir(outputPath)
+    // err = os.Chdir(outputPath)
     
     if err != nil {
         return nil, err
     }
     log.Debug("Executing bashScript")
-    out, err := exec.Command("sh", bashScript).Output()
-    log.Debug("Output ", out)
-    error := os.Remove(filepath.Join(bashScript))
+    out, err := exec.Command("sh", filepath.Join(outputPath, bashScript)).Output()
+    log.Debug("Output ", string(out))
+    
+    error := os.Remove(filepath.Join(outputPath, bashScript))
     if error != nil {
         log.Error("Error removing file. ", error)
     }

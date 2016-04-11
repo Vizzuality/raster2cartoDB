@@ -11,6 +11,7 @@ import (
 func ReadFile() ([]string, error) {
 	log.Info("Reading file: out.sql")
     path, err := filepath.Abs("out.sql")
+    log.Debug("Path", path)
 	f, err := os.Open(path)
 	if err != nil {
 		log.Error(err)

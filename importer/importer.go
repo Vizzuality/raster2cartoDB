@@ -6,9 +6,10 @@ import (
 	log "github.com/Sirupsen/logrus"
     "github.com/agonzalezro/cartodb_go"
     "time"
+    "fmt"
 )
 
-func Run(lines []string, cartoDBApi string, user string, proyection int, numThreads int) {
+func Run(lines []string, cartoDBApi string, user string, proyection int, numThreads int, tableName string) {
 	log.Info("Import lines with API: ", cartoDBApi, " Num lines:", len(lines))
 
 	var waitGroup sync.WaitGroup
@@ -26,7 +27,7 @@ func Run(lines []string, cartoDBApi string, user string, proyection int, numThre
                 _, err := ExecuteSQL(line, client)
                 bar.Increment()
                 if err != nil {
-                    log.Error("Error in executor(", thread ,") with sql: ", line, ". Error: ", err)
+                    log.Error("Error in executor(", thread ,") with sql: ", ". Error: ", err)
                 }      
 			}
             time.Sleep(1 * time.Second)
@@ -39,6 +40,11 @@ func Run(lines []string, cartoDBApi string, user string, proyection int, numThre
     close(tasks)
     log.Debug("Waiting to executors")
 	waitGroup.Wait()
+    client := cartodb.NewAPIKeyClient(cartoDBApi, user, "", "", "")
+    log.Debug("Updating tables");
+    ExecuteSQL(fmt.Sprintf("update %s set the_raster_webmercator =st_transform(st_setSrid(the_raster_webmercator, %d), 3857)", tableName, proyection), client)
+    ExecuteSQL(fmt.Sprintf("GRANT SELECT ON %s TO tileuser;", tableName), client)
+    ExecuteSQL(fmt.Sprintf("GRANT SELECT ON %s TO publicuser;", tableName), client)
     
     
     

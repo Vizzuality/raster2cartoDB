@@ -3,9 +3,9 @@ package main
 import (
 	"os"
     log "github.com/Sirupsen/logrus"
-    "github.com/rrequero/importraster/importer"
-    "github.com/rrequero/importraster/raster2pgsql"
-    "github.com/rrequero/importraster/reader"
+    "github.com/rrequero/raster2cartodb/importer"
+    "github.com/rrequero/raster2cartodb/raster2pgsql"
+    "github.com/rrequero/raster2cartodb/reader"
     "github.com/jessevdk/go-flags"
 )
 
@@ -53,7 +53,7 @@ func main() {
         panic(err)
     } 
     log.Info("Third: Importing in CartoDB")
-    importer.Run(lines, opts.CartoAPI, opts.CartoUser, opts.Proyection, opts.Threads)
+    importer.Run(lines, opts.CartoAPI, opts.CartoUser, opts.Proyection, opts.Threads, opts.TableName)
     
     if err != nil {
         panic(err)
